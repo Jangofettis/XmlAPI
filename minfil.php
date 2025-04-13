@@ -7,33 +7,21 @@
     <title>Minfil</title>
 </head>
 <body>
-    <form method="post" action="minfil.php">
-        <label for="country">Välj en biltillverkare:</label>
-        <select name='country' id='country'>
-        <option value="">Välj en tillverkare</option>
-
-        <?php echo "hej"; ?>
+    <form method='post' action='response.php'>
         <?php
+        $url="https://wwwlab.webug.se/examples/XML/vehiclesservice/manufacturer/";
+        $tillverkare = file_get_contents($url);
+        $data = json_decode($tillverkare);
 
-            echo "<pre>";
-            print_r($xmltext);
-            echo "</pre>";
-
-            $url = "https://wwwlab.webug.se/examples/XML/vehiclesservice/manufacturer/";
-            $xmltext = file_get_contents($url);
-            $xml = simplexml_load_string($xmltext);
-
-            if ($xml && isset($xml->Manufacturer)) {
-                foreach ($xml->Manufacturer as $manufacturer) {
-                    $selected = (isset($_POST['country']) && $_POST['country'] == (string)$manufacturer->Country) ? 'selected' : '';
-                    echo "<option value='{$manufacturer->Country}' $selected>{$manufacturer->Name}</option>";
-                }
-            } else {
-                echo "<option>Inga tillverkare hittades</option>";
-            }
+        echo "<select name='manufactur'>";
+        foreach ($data as $info) {
+            $namn = $info[0];
+            $land = $info[1];
+            echo '<option value="' . $land . '">' . $namn . '</option>';
+        }
+        echo "</select>";
         ?>
-        </select>
-        <input type="submit" value="Shurda">
+        <input type='submit' value='Submit'>
     </form>
 </body>
 </html>
