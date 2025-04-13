@@ -6,43 +6,63 @@
     <title>taemot</title>
 </head>
 <body>
-    
-<html>                                                                                                                                                
-<body>                                                                                                                                                
 <table border="1">
-    <?php
+<?php
 
-    if (isset($_POST['manufactur'])) {
-        $land = $_POST['manufactur'];
-    }else{
-        $land = "Ingen tillverkare vald";
-    }
+if (isset($_POST['manufactur'])) {
+    $land = $_POST['manufactur'];
+} else {
+    $land = "Ingen tillverkare vald";
+}
 
-    $url="https://wwwlab.webug.se/examples/XML/vehiclesservice/vehicles/?country=£land";
-    $tillverkare = file_get_contents($url);
-    $data = json_decode($tillverkare);
+$url = "https://wwwlab.webug.se/examples/XML/vehiclesservice/vehicles/?country=$land";
+$tillverkare = file_get_contents($url);
+$data = json_decode($tillverkare, true);
 
-    echo "<tr><td>Tillverkare</td><td>Land</td></tr>";
-    echo "<tr>";
+if ($data) {
+    echo "<tr><th>Company</th><th>Vehicles</th></tr>";
 
-    echo "<td>" . $land . "</td>";
-    foreach ($data as $land) {
+    foreach ($data as $entry) {
+        $company = isset($entry[0]) ? $entry[0] : "N/A";
+        $vehicles = isset($entry[1]) ? $entry[1] : []; 
+
+        echo "<tr>";
+        echo "<td>" . $company . "</td>";
         echo "<td>";
-        echo "<table>";
-        echo "<tr><td>".$info[1]."</td><td>"; 
-        echo "<tr><td>".$info[2]."</td></tr>";
+        echo "<table border='1'>"; 
+        echo "<tr><th>Name</th><th>Config</th><th>HP</th><th>Produced</th><th>Image</th></tr>";
+
+        foreach ($vehicles as $vehicle) {
+            $name = $vehicle[0];
+            $config = $vehicle[1];
+            $hp = $vehicle[2];
+            $produced = $vehicle[3];
+            $image = $vehicle[4];
+
+            echo "<tr>";
+            echo "<td>$name</td>";
+            echo "<td>$config</td>";
+            echo "<td>$hp</td>";
+            echo "<td>$produced</td>";
+            echo "<td>";
+            if ($image) {
+                echo "<img src='https://wwwlab.webug.se/examples/XML/vehicleImages/$image' alt='$name' style='width:100px;height:auto;'>";
+            } else {
+                echo "No Image";
+            }
+            echo "</td>";
+            echo "</tr>";
+        }
+
         echo "</table>";
         echo "</td>";
+        echo "</tr>";
     }
-    echo "</tr>";
-
-
-    echo "<pre>";
-    print_r($_POST);
-    echo "</pre>";
-    ?>
+} else {
+    echo "<tr><td colspan='2'>Ingen data hittades för landet: $land</td></tr>";
+}
+?>
 </table>
-    
-</body>                                                                                                                                               
-</html>                                                                                                                                               
+</body>
+</html>                                                                                                                                                    
 
